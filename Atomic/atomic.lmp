@@ -1,27 +1,45 @@
-units		real
+units		lj
 atom_style	full
 
-read_data	inputFiles/atomic.lmpsys
-    
-pair_style	lj/cut 10.0 
-pair_coeff   	1 1 0.15 3.4 
+###### System setup ######
+variable 	xlo equal 0.0
+variable 	xhi equal 10.0
+variable 	ylo equal 0.0
+variable 	yhi equal 10.0
+variable 	zlo equal 0.0
+variable 	zhi equal 10.0
 
-thermo_style    custom step temp ke pe etotal press
-thermo          100 
-log		outputFiles/thermo.log   
+variable        sdens equal 0.844
 
-minimize 	1.0e-4 1.0e-6 1000 10000
-#reset_timestep  0
+region          myregion block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} units box
+create_box      1 myregion
 
-fix 		fxnvt all nvt temp 300.0 300.0 100.0
+lattice         fcc ${sdens}
+create_atoms	1 region myregion
 
-#run 		10000
-dump         dmpall all dcd 100 outputFiles/atomic.dcd   
+mass		1 1.0
+write_data	atomic.lmpsys
+
+###### Interaction Potentials ######
+pair_style 	lj/cut 2.5
+pair_coeff 	1 1 1.0 1.0 
+
+###### log output ######
+thermo_style 	custom step temp ke pe etotal press
+thermo 		100
+log 		log.dat
+
+###### System minimization ######
+minimize	1.0e-4 1.0e-6 1000 10000
+reset_timestep	0
+###### Thermostat-setup (Nos`e-Hoover thermostat) ######
+fix		fxnvt all nvt temp 0.71 0.71 $(100.0*dt)
+
+###### Output Run and computing RDF ######
 run 		10000
 
+compute 	computeRdf all rdf 100
+fix 		fixRdf all ave/time 1 10000 10000 c_computeRdf[*] file rdf.dat mode vector
 
-
-
-
-
-
+dump 		dumpall all dcd 100 atomic.dcd
+run 		10000
