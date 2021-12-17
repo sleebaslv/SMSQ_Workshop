@@ -1,0 +1,27 @@
+units		real
+atom_style	full
+
+read_data	inputFiles/atomic.lmpsys
+    
+pair_style	lj/cut 10.0 
+pair_coeff   	1 1 0.15 3.4 
+
+thermo_style    custom step temp ke pe etotal press
+thermo          100 
+log		outputFiles/thermo.log   
+
+minimize 	1.0e-4 1.0e-6 1000 10000
+#reset_timestep  0
+
+fix 		fxnvt all nvt temp 300.0 300.0 100.0
+
+#run 		10000
+dump         dmpall all dcd 100 outputFiles/atomic.dcd   
+run 		10000
+
+
+
+
+
+
+
