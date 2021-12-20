@@ -37,8 +37,9 @@ fix		fxnvt all nvt temp 0.71 0.71 $(100.0*dt)
 
 ###### Output Run and computing RDF ######
 run 		10000
+reset_timestep 	0
 
-compute 	computeRdf all rdf 100
+compute 	computeRdf all rdf 100 
 fix 		fixRdf all ave/time 1 10000 10000 c_computeRdf[*] file rdf.dat mode vector
 
 dump 		dumpall all dcd 100 atomic.dcd
