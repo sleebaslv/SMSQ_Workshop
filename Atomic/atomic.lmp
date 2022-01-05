@@ -1,7 +1,10 @@
+dimension 	3
 units		lj
-atom_style	full
+boundary 	p p p
 
-###### System setup ######
+atom_style	atomic		# Used for to simulate particles that has only mass as its attribute
+
+########## System setup ##########
 variable 	xlo equal 0.0
 variable 	xhi equal 10.0
 variable 	ylo equal 0.0
@@ -9,38 +12,45 @@ variable 	yhi equal 10.0
 variable 	zlo equal 0.0
 variable 	zhi equal 10.0
 
-variable        sdens equal 0.844
-
 region          myregion block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} units box
+
 create_box      1 myregion
 
-lattice         fcc ${sdens}
-create_atoms	1 region myregion
+create_atoms	1 random 800 87183 myregion # Creates 800 particles inside the simulation box 10x10x10
 
 mass		1 1.0
 write_data	atomic.lmpsys
 
-###### Interaction Potentials ######
+########## Interaction Potentials ##########
 pair_style 	lj/cut 2.5
 pair_coeff 	1 1 1.0 1.0 
+pair_modify	shift yes
 
-###### log output ######
-thermo_style 	custom step temp ke pe etotal press
+##########  Neighbor List and Timestep  ##########
+timestep        0.005
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+########## Log output ##########
+thermo_style 	custom step temp density ke pe etotal 
 thermo 		100
 log 		log.dat
 
-###### System minimization ######
-minimize	1.0e-4 1.0e-6 1000 10000
-reset_timestep	0
-###### Thermostat-setup (Nos`e-Hoover thermostat) ######
-fix		fxnvt all nvt temp 0.71 0.71 $(100.0*dt)
+########## System minimization ##########
+velocity 	all create 0.8 123456 dist gaussian
 
-###### Output Run and computing RDF ######
+minimize	1.0e-4 1.0e-4 100000 100000
+reset_timestep	0
+
+########## Thermostat-setup (Nos`e-Hoover thermostat) ##########
+fix		fxnvt all nvt temp 0.8 0.8 $(100.0*dt)
+
 run 		10000
 reset_timestep 	0
+########## Output Run and computing RDF ##########
 
-compute 	computeRdf all rdf 100 
-fix 		fixRdf all ave/time 1 10000 10000 c_computeRdf[*] file rdf.dat mode vector
+compute 	computeRdf all rdf 200  
+fix 		fixRdf all ave/time 1 10000 10000 c_computeRdf[*] file rdf.dat mode vector # RDF values averaged over 10000 timesteps will be saved
 
 dump 		dumpall all dcd 100 atomic.dcd
 run 		10000

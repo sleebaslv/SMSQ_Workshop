@@ -1,32 +1,32 @@
-########################################################
-echo		screen
-units		lj
-atom_style	full
+dimension 	3
 boundary	p p f
+units		lj
 
-##### System setup  ######
-region 		myregion block -5.0 5.0 -5.0 5.0 -12.0 12.0 units box
+atom_style	atomic
+
+########## System setup  ##########
+region 		myregion block -5.0 5.0 -5.0 5.0 -12.0 12.0 units box		# Defining region for the entire simulation box
  
-region		fluid block -5.0 5.0 -5.0 5.0 -10.0 10.0 units box
-region		wall1 block -5.0 5.0 -5.0 5.0 -12.0 -10.0 units box
-region		wall2 block -5.0 5.0 -5.0 5.0 10.0 12.0 units box
+region		fluid block -5.0 5.0 -5.0 5.0 -10.0 10.0 units box		# Defining region for the fluid particles 
+region		wall1 block -5.0 5.0 -5.0 5.0 -12.0 -10.0 units box		# Defining region for the bottom wall particles
+region		wall2 block -5.0 5.0 -5.0 5.0 10.0 12.0 units box		# Defining region for the top wall particles
 
-create_box	3 myregion
+create_box	3 myregion			# Creating the simulation box
 
 create_atoms	1 random 1000 87183 fluid	# Creating fluid particles with a density of 0.5
 
-lattice  	fcc 1.0				# Creating wall particles with a fcc lattice density of 1.0
+lattice  	fcc 1.0			
 
-create_atoms 	2 region wall1
-create_atoms 	3 region wall2
+create_atoms 	2 region wall1			# Creating bottom wall with a fcc lattice density of 1.0
+create_atoms 	3 region wall2			# Creating top wall with a fcc lattice density of 1.0
 
 mass 		1 1.0
 mass 		2 1.0
 mass 		3 1.0
 
 write_data 	poiseuille.lmpsys
-#
-###### Defining groups ######
+
+########## Defining groups ##########
 group 		system type 1 2 3  
 
 group           fluid type 1 
@@ -34,8 +34,8 @@ group           fluid type 1
 group           bot type 2  
 group           top type 3 
 group		wall type 2 3 
-#
-###### Interaction potentials ######
+
+########## Interaction potentials ##########
 pair_style 	lj/cut 2.5
 
 #pair_coeff      1 1 1.0 1.0
@@ -44,8 +44,8 @@ pair_style 	lj/cut 2.5
 
 ## OR ##
 pair_coeff 	* * 1.0 1.0 
-#
-######  Timestep & minimization  ######
+
+##########  Timestep & minimization  ##########
 timestep        0.001
 neighbor        1.0 bin
 neigh_modify    every 1 delay 0 check yes
@@ -53,16 +53,16 @@ neigh_modify    exclude group wall wall
 
 velocity        fluid create 1.0 123456
 
-fix             fxwall wall setforce 0.0 0.0 0.0
+fix             fxwall wall setforce 0.0 0.0 0.0	# To keep the walls rigid
 minimize        1.0e-6 1.0e-6 1000000 1000000
 reset_timestep  0
-#
-######  Thermostating the fluid using Nos'e-Hoover thermostat  ######
+
+##########  Thermostating the fluid using Nos'e-Hoover thermostat ##########
 fix             fxnvt_fluid fluid nvt temp 1.0 1.0 $(100.0*dt)
 
 compute         wall_temp wall temp
 compute         fluid_temp fluid temp
-fix_modify      fxnvt_fluid temp fluid_temp
+#fix_modify      fxnvt_fluid temp fluid_temp
 
 thermo          10
 thermo_style    custom step press temp c_wall_temp c_fluid_temp ke pe etotal 
@@ -70,23 +70,20 @@ thermo_style    custom step press temp c_wall_temp c_fluid_temp ke pe etotal
 dump            dmpall  all dcd 50 dump.dcd
 dump_modify     dmpall unwrap yes
 
-compute         cChunk fluid chunk/atom bin/1d z 0.0 0.1 units box bound z -15.9752 15.9752           # binwidth 0.1
-fix             fx_vel1 fluid ave/chunk 1 10000 10000 cChunk vx vy vz file ./vel1.dat
+compute         cChunk fluid chunk/atom bin/1d z 0.0 0.1 units box bound z -15.9752 15.9752       
+fix             fx_vel1 fluid ave/chunk 1 10000 10000 cChunk vx vy vz file ./vel_before.dat
 
 run             10000
 unfix 		fx_vel1
-#
-###### Application of external field ######
-fix             fxacc fluid gravity 0.075 vector 1 0 0
+
+########## Application of external field ##########
+fix             fxacc fluid gravity 0.075 vector 1 0 0		# Applying an external acceleration of 0.075 to all fluid particles in the x-direction
 
 run		10000
 #reset_timestep  0
-#
-###### Output ######
-#compute         cChunk fluid chunk/atom bin/1d z 0.0 0.1 units box bound z -15.9752 15.9752           # binwidth 0.1
-fix             fx_vel2 fluid ave/chunk 1 10000 10000 cChunk vx vy vz file ./vel2.dat
 
-#fix             fx_den fluid ave/chunk 1 10000 10000 cChunk density/mass file ./den.dat
+########## Output run ##########
+fix             fx_vel2 fluid ave/chunk 1 10000 10000 cChunk vx vy vz file ./vel_after.dat
+fix             fx_den fluid ave/chunk 1 10000 10000 cChunk density/mass file ./den.dat
 
 run             10000
-

@@ -1,0 +1,10 @@
+# Packmol script to create 500 water molecules in a water box of dimension 10x10x10.
+
+tolerance 2.0        				# Distance tolerance between molecules (in A)
+output water0.pdb    				# Output filename
+filetype pdb         				# Output filetype  
+structure water.pdb				# Reading the the input file 
+   number 256	     				# Number of water molecules required 
+   inside box 0.0 0.0 0.0 20.0 20.0 20.0 	# Dimension of water box
+end structure
+

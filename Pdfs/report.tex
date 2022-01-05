@@ -1,0 +1,142 @@
+%\documentclass[a4paper]{article}
+\documentclass[12pt]{article}
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{multicol}
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{soul}
+%\usepackage{hyperref}
+\usepackage{threeparttable}
+
+
+%% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+%\AtBeginDocument{\renewcommand{\bibname}{References}}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{$\textrm{SM}^2$}
+\lhead{NEMD Workshop}
+\rfoot{\thepage}
+
+\title{Report}
+\author{}
+\date{\today}
+
+\begin{document}
+%\maketitle
+\begin{titlepage}
+        \centering
+        {\scshape\Large\bfseries Non-equilibrium molecular dynamics workshop \par} 
+        \vfill
+        {\Large\bfseries LAMMPS Hands-on Session \par}
+        \vfill
+        \includegraphics[width=0.5\textwidth]{sm2_logo.png}\par %\vspace{5cm}
+        \vfill
+
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Running an MD simulation}
+To run a molecular dynamics (MD) simulation using 
+Large-scale Atomic/Molecular Massively Parallel Simulator (LAMMPS) we generally need two files.
+The first file is called a LAMMPS input script which consists of the commands required to run
+a MD simulation.
+The second file called the system file contains the description of the system, atom coordinates, bonds, system size, etc. and is read by the LAMMPS script at the start of a simulation.
+In some cases the system can be created in the LAMMPS script itself and in such cases we 
+require only the LAMMPS input script to run the simulation.
+A general outline of a LAMMPS MD simulation is given below,
+
+\begin{enumerate}
+\centering
+\item Setting up the system\\
+(In this step either the system information is read by LAMMPS or 
+the required system is created in the input script itself.)
+$$\big\Downarrow$$
+\item Providing interaction potentials \\
+(In this step the atomic/molecular interaction information is provided to LAMMPS.
+For complex or real systems we should refer the literature to obtain the 
+appropriate values for interaction parameters.) \\
+$$\big\Downarrow$$ 
+\item System minimization \\
+(In this step LAMMPS adjust the atom coordinates to attain a minimum potential energy state for 
+the system. Though not necessary it is advisable to perform this step since it can prevent the 
+system from blowing up due to bad intial system configuration.) \\
+$$\big\Downarrow$$
+\item Setting up the system temperature \\
+(In this step LAMMPS will bring the system to the required temperature.
+Different thermostatting schemes are available in LAMMPS to achieve the required temperature.) \\
+$$\big\Downarrow$$
+\item Running the system in the required ensemble and output \\
+(In this step the system is allowed to evolve in the required statistical ensemble and 
+output information is collected from LAMMPS for further analysis.)
+
+\end{enumerate}
+
+\newpage
+\subsection{Some frequently used LAMMPS commands}
+\begin{itemize}
+\item pair\_style, pair\_coeff $\Rightarrow$ To define the interaction parameters for the particles.
+\item set $\Rightarrow$
+\item fix $\Rightarrow$
+\item compute $\Rightarrow$
+\item dump, thermo\_style $\Rightarrow$
+\end{itemize}
+
+\newpage
+\section{Atomic System}
+\begin{itemize}
+\item LAMMPS filename: atomic.lmp
+\item Here we simulate an atomic system containing Lennard-Jones (LJ) particles with 
+reduced density, $\rho^{*} = 0.8$.
+\item The values for interaction parameters $\sigma$ and $\epsilon$ were kept equal to 1.
+\item System dimensions: $10\sigma \times 10\sigma \times 10\sigma$ 
+($L_{x} \times L_{y} \times L_{z}$).
+\item System is equilibrated to a reduced temperature $T^{*} = 0.8$, 
+using a Nos\'e-Hoover thermostat in LAMMPS.
+\item The simulation outputs the radial distribution function (RDF) for the 
+present atomic system.
+\item The RDF values obtained from the simulation is compared with the RDF plot given 
+in Page 70 of the book `Computer Simulation of Liquids' by Allen and Tildesley. 
+\end{itemize}
+
+\section{Water System}
+\begin{itemize}
+\item LAMMPS filename: water.lmp
+\item Here we simulate a water box containing 256 SPC/E water molecules with 
+density $1 \ \textrm{g} \ \textrm{cm}^{-3}$.
+\item The values for interaction parameters is taken from 
+`Mark, P., \& Nilsson, L. (2001). Structure and dynamics of the TIP3P, SPC, and SPC/E water models at 298 K. The Journal of Physical Chemistry A, 105(43), 9954-9960.'
+\item Simulation box dimensions: $20 \times 20 \times 20 \ \textrm{\AA}^{3}$ 
+($L_{x} \times L_{y} \times L_{z}$).
+\item System is initially equilibrated to a temperature of 298 K and 1 bar pressure, 
+using a Nos\'e-Hoover barostat in LAMMPS.
+\item The simulation outputs RDF ($g_{H-H}(r)$, $g_{H-O}(r)$, and $g_{O-O}(r)$) and 
+Mean square displacement (MSD) for the water system.
+\item The Self-diffusion coefficient (D) is calculated from the MSD of all oxygen 
+atoms using the Einstein relation,
+$$\textrm{MSD} = \lim_{t\to\infty}\langle |\vec{r}(t^{*}+t) - \vec{r}(t^{*})|\rangle = 6Dt.$$
+
+\end{itemize}
+
+
+%\begin{figure}[h!]
+%\begin{tabular}{cc}
+%\includegraphics[width=0.5\textwidth]{./plots/allen_rdf.png} &
+%\includegraphics[height=0.4\textwidth, width=0.5\textwidth]{./plots/atomic_rdf.png}
+%\end{tabular}
+%\caption{\label{fig:1} }
+%\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
