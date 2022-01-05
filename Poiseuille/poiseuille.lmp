@@ -38,18 +38,18 @@ group		wall type 2 3
 ########## Interaction potentials ##########
 pair_style 	lj/cut 2.5
 
-#pair_coeff      1 1 1.0 1.0
-#pair_coeff      1 3* 1.0 1.0
-#pair_coeff      3 3* 1.0 1.0
+pair_coeff      1 1 1.0 1.0
+pair_coeff      1 2* 1.0 1.0
+pair_coeff      2* 2* 0.0 0.0
 
 ## OR ##
-pair_coeff 	* * 1.0 1.0 
+#pair_coeff 	* * 1.0 1.0 
 
 ##########  Timestep & minimization  ##########
 timestep        0.001
 neighbor        1.0 bin
 neigh_modify    every 1 delay 0 check yes
-neigh_modify    exclude group wall wall
+neigh_modify    exclude group wall wall			 
 
 velocity        fluid create 1.0 123456
 
@@ -62,10 +62,9 @@ fix             fxnvt_fluid fluid nvt temp 1.0 1.0 $(100.0*dt)
 
 compute         wall_temp wall temp
 compute         fluid_temp fluid temp
-#fix_modify      fxnvt_fluid temp fluid_temp
 
 thermo          10
-thermo_style    custom step press temp c_wall_temp c_fluid_temp ke pe etotal 
+thermo_style    custom step temp c_wall_temp c_fluid_temp ke pe etotal 
 
 dump            dmpall  all dcd 50 dump.dcd
 dump_modify     dmpall unwrap yes
@@ -80,10 +79,10 @@ unfix 		fx_vel1
 fix             fxacc fluid gravity 0.075 vector 1 0 0		# Applying an external acceleration of 0.075 to all fluid particles in the x-direction
 
 run		10000
-#reset_timestep  0
+reset_timestep  0
 
 ########## Output run ##########
-fix             fx_vel2 fluid ave/chunk 1 10000 10000 cChunk vx vy vz file ./vel_after.dat
-fix             fx_den fluid ave/chunk 1 10000 10000 cChunk density/mass file ./den.dat
+fix             fx_vel2 fluid ave/chunk 1 10000 10000 cChunk vx vy vz file ./vel_after.dat	# Saves the velocity profile averaged over 10000 timesteps
+fix             fx_den fluid ave/chunk 1 10000 10000 cChunk density/mass file ./den.dat		# Saves the density profile averaged over 10000 timesteps
 
 run             10000

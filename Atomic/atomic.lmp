@@ -16,7 +16,7 @@ region          myregion block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} units b
 
 create_box      1 myregion
 
-create_atoms	1 random 800 87183 myregion # Creates 800 particles inside the simulation box 10x10x10
+create_atoms	1 random 800 87183 myregion # Creates particles with a density of 0.8 
 
 mass		1 1.0
 write_data	atomic.lmpsys
