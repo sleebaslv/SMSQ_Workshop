@@ -85,6 +85,10 @@ output information is collected from LAMMPS for further analysis.)
 \newpage
 \subsection{Some frequently used LAMMPS commands}
 \begin{itemize}
+\item atoms\_style $\Rightarrow$ To define the attributes of the simulation pariticles.
+\item region $\Rightarrow$ To define a geometeric region which can be later accessed 
+in the LAMMPS script.
+\item group $\Rightarrow$ To identify a set of particles as a single group.
 \item pair\_style, pair\_coeff $\Rightarrow$ To define the interaction parameters for the particles.
 \item set $\Rightarrow$
 \item fix $\Rightarrow$
@@ -109,6 +113,25 @@ present atomic system.
 in Page 70 of the book `Computer Simulation of Liquids' by Allen and Tildesley. 
 \end{itemize}
 
+%\newpage
+\section{Poiseuille System}
+\begin{itemize}
+\item LAMMPS filename: poiseuille.lmp
+\item Here we simulate a system where a fluid is confined between two walls.
+\item All particles in the system are modelled as LJ particles.
+\item The values for interaction parameters $\sigma$ and $\epsilon$ between the fluid particles 
+and between a fluid particle and a wall particle were kept equal to 1.
+\item The walls are kept as rigid i.e., there is no interaction between wall particles.
+\item Channel width: $20\sigma \ (L_{z})$.
+\item Wall area: $10\sigma \times 10\sigma \ (L_x \times L_y)$.
+\item The system is equilibrated to a temperature, $T^* = 1.0$ by thermostating the fluid using a
+Nos\'e-Hoover thermostat.
+\item We apply an acceleration, $\vec{a} = 0.075\hat{i} + 0 \hat{j} + 0\hat{k}$ (LJ units) to 
+every fluid particle in the system to simulate a Poiseuille flow.
+\item The simulation outputs the velocity and density variation w.r.t the confined direction.
+\end{itemize}
+
+\newpage
 \section{Water System}
 \begin{itemize}
 \item LAMMPS filename: water.lmp
@@ -125,8 +148,9 @@ Mean square displacement (MSD) for the water system.
 \item The Self-diffusion coefficient (D) is calculated from the MSD of all oxygen 
 atoms using the Einstein relation,
 $$\textrm{MSD} = \lim_{t\to\infty}\langle |\vec{r}(t^{*}+t) - \vec{r}(t^{*})|\rangle = 6Dt.$$
-
 \end{itemize}
+
+\section{SLLOD System}
 
 
 %\begin{figure}[h!]

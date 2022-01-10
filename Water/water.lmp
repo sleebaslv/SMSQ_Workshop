@@ -4,8 +4,7 @@ dimension 	3
 boundary 	p p p
 units		real
 
-atom_style	full
-#---Style "full" is used to simulate molecular systems with charges.
+atom_style	full # Style "full" is used to simulate molecular systems with charges.
 
 ########## Reading the system file ########## 
 read_data	./water.lmpsys
