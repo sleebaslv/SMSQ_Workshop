@@ -12,14 +12,16 @@ variable 	yhi equal 10.0
 variable 	zlo equal 0.0
 variable 	zhi equal 10.0
 
-region          myregion block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} units box
+variable        srate equal ${strain_rate}	# Strain rate applied 
+
+region          myregion prism ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} 0.0 0.0 0.0 
 
 create_box      1 myregion
 
 create_atoms	1 random 800 87183 myregion # Creates particles with a density of 0.8 
 
 mass		1 1.0
-write_data	atomic.lmpsys
+#write_data	sllod.lmpsys
 
 ########## Interaction Potentials ##########
 pair_style 	lj/cut 2.5
@@ -27,30 +29,37 @@ pair_coeff 	1 1 1.0 1.0
 pair_modify	shift yes
 
 ##########  Neighbor List and Timestep  ##########
-timestep        0.005
+timestep        0.001
 neighbor        1.0 bin
 neigh_modify    every 1 delay 0 check yes
 
 ########## Log output ##########
-thermo_style 	custom step temp density ke pe etotal 
+thermo_style 	custom step temp press density ke pe etotal 
 thermo 		100
 log 		log.dat
 
 ########## System minimization ##########
-velocity 	all create 0.8 123456 dist gaussian
+velocity 	all create 1.0 123456 dist gaussian
 
 minimize	1.0e-4 1.0e-4 100000 100000
 reset_timestep	0
 
-########## Thermostat-setup (Nos`e-Hoover thermostat) ##########
-fix		fxnvt all nvt temp 0.8 0.8 $(100.0*dt)
+########## Applying strain rate to the system ##########
+fix             fxnvt all nvt/sllod temp 1.0 1.0 $(100.0*dt)
+fix             fxdeform all deform 1 xy erate ${srate} remap v
 
-run 		10000
-reset_timestep 	0
-########## Output Run and computing RDF ##########
+compute         usual all temp
+compute         tilt all temp/deform
 
-compute 	computeRdf all rdf 200  
-fix 		fixRdf all ave/time 1 10000 10000 c_computeRdf[*] file rdf.dat mode vector # RDF values averaged over 10000 timesteps will be saved
+thermo          1000
+thermo_style    custom step temp density c_usual epair etotal press pxy v_srate
+thermo_modify   temp tilt
+run             50000
 
-dump 		dumpall all dcd 100 atomic.dcd
-run 		10000
+reset_timestep  0
+
+########## Output Run ##########
+compute         computePress all pressure thermo_temp
+fix             fxpress all ave/time 1 1 50 c_computePress[*] file ./output/pressure-${srate}.dat
+
+run             100000

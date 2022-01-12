@@ -1,0 +1,51 @@
+LAMMPS (7 Aug 2019)
+dimension 	3
+units		lj
+boundary 	p p p
+
+atom_style	atomic		# Used for to simulate particles that has only mass as its attribute
+
+########## System setup ##########
+variable 	xlo equal 0.0
+variable 	xhi equal 10.0
+variable 	ylo equal 0.0
+variable 	yhi equal 10.0
+variable 	zlo equal 0.0
+variable 	zhi equal 10.0
+
+variable        srate equal ${strain_rate}	# Strain rate applied
+variable        srate equal 2.5	
+
+region          myregion prism ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} 0.0 0.0 0.0
+region          myregion prism 0 ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} 0.0 0.0 0.0
+region          myregion prism 0 10 ${ylo} ${yhi} ${zlo} ${zhi} 0.0 0.0 0.0
+region          myregion prism 0 10 0 ${yhi} ${zlo} ${zhi} 0.0 0.0 0.0
+region          myregion prism 0 10 0 10 ${zlo} ${zhi} 0.0 0.0 0.0
+region          myregion prism 0 10 0 10 0 ${zhi} 0.0 0.0 0.0
+region          myregion prism 0 10 0 10 0 10 0.0 0.0 0.0
+
+create_box      1 myregion
+Created triclinic box = (0 0 0) to (10 10 10) with tilt (0 0 0)
+  2 by 2 by 2 MPI processor grid
+
+create_atoms	1 random 800 87183 myregion # Creates particles with a density of 0.8
+Created 800 atoms
+  create_atoms CPU = 0.00310313 secs
+
+mass		1 1.0
+#write_data	sllod.lmpsys
+
+########## Interaction Potentials ##########
+pair_style 	lj/cut 2.5
+pair_coeff 	1 1 1.0 1.0
+pair_modify	shift yes
+
+##########  Neighbor List and Timestep  ##########
+timestep        0.001
+neighbor        1.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+########## Log output ##########
+thermo_style 	custom step temp press density ke pe etotal
+thermo 		100
+log 		log.dat
