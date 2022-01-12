@@ -21,7 +21,7 @@ create_box      1 myregion
 create_atoms	1 random 800 87183 myregion # Creates particles with a density of 0.8 
 
 mass		1 1.0
-#write_data	sllod.lmpsys
+write_data	sllod.lmpsys
 
 ########## Interaction Potentials ##########
 pair_style 	lj/cut 2.5
@@ -45,9 +45,9 @@ minimize	1.0e-4 1.0e-4 100000 100000
 reset_timestep	0
 
 ########## Applying strain rate to the system ##########
-fix             fxnvt all nvt/sllod temp 1.0 1.0 $(100.0*dt)
-fix             fxdeform all deform 1 xy erate ${srate} remap v
-
+fix             fxnvt all nvt/sllod temp 1.0 1.0 $(100.0*dt)		# Used to thermostat a system with changing simulation box size
+fix             fxdeform all deform 1 xy erate ${srate} remap v		# Applies an engineering strain rate to the particles.
+									
 compute         usual all temp
 compute         tilt all temp/deform
 
