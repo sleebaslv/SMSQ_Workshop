@@ -102,12 +102,13 @@ in the LAMMPS script.
 \item LAMMPS filename: atomic.lmp
 \item Here we simulate an atomic system containing Lennard-Jones (LJ) particles with 
 reduced density, $\rho^{*} = 0.8$.
-\item The values for interaction parameters $\sigma$ and $\epsilon$ were kept equal to 1.
+\item The values for LJ interaction parameters $\sigma$ and $\epsilon$ are kept equal to 1.
+\item The LJ interaction cutoff, $r_c$ is equal to $2.5\sigma$.
 \item System dimensions: $10\sigma \times 10\sigma \times 10\sigma$ 
 ($L_{x} \times L_{y} \times L_{z}$).
 \item System is equilibrated to a reduced temperature $T^{*} = 0.8$, 
 using a Nos\'e-Hoover thermostat in LAMMPS.
-\item The simulation outputs the radial distribution function (RDF) for the 
+\item The simulation outputs the radial distribution function (RDF) of the 
 present atomic system.
 \item The RDF values obtained from the simulation is compared with the RDF plot given 
 in Page 70 of the book `Computer Simulation of Liquids' by Allen and Tildesley. 
@@ -119,9 +120,10 @@ in Page 70 of the book `Computer Simulation of Liquids' by Allen and Tildesley.
 \item LAMMPS filename: poiseuille.lmp
 \item Here we simulate a system where a fluid is confined between two walls.
 \item All particles in the system are modelled as LJ particles.
-\item The values for interaction parameters $\sigma$ and $\epsilon$ between the fluid particles 
-and between a fluid particle and a wall particle were kept equal to 1.
+\item The values for LJ interaction parameters $\sigma$ and $\epsilon$ between the fluid particles 
+and between a fluid particle and a wall particle are kept equal to 1.
 \item The walls are kept as rigid i.e., there is no interaction between wall particles.
+\item The LJ interaction cutoff, $r_c = 2.5\sigma$
 \item Channel width: $20\sigma \ (L_{z})$.
 \item Wall area: $10\sigma \times 10\sigma \ (L_x \times L_y)$.
 \item The system is equilibrated to a temperature, $T^* = 1.0$ by thermostating the fluid using a
@@ -144,13 +146,65 @@ density $1 \ \textrm{g} \ \textrm{cm}^{-3}$.
 \item System is initially equilibrated to a temperature of 298 K and 1 bar pressure, 
 using a Nos\'e-Hoover barostat in LAMMPS.
 \item The simulation outputs RDF ($g_{H-H}(r)$, $g_{H-O}(r)$, and $g_{O-O}(r)$) and 
-Mean square displacement (MSD) for the water system.
+Mean square displacement (MSD) of the water system.
 \item The Self-diffusion coefficient (D) is calculated from the MSD of all oxygen 
 atoms using the Einstein relation,
 $$\textrm{MSD} = \lim_{t\to\infty}\langle |\vec{r}(t^{*}+t) - \vec{r}(t^{*})|\rangle = 6Dt.$$
 \end{itemize}
 
 \section{SLLOD System}
+\begin{itemize}
+\item LAMMPS filename: sllod.lmp
+\item Here we simulate an atomic system containing LJ particles with density, $\rho^{*} = 0.8$.
+\item The values for LJ interaction parameters $\sigma$ and $\epsilon$ are kept equal to 1.
+\item The LJ interaction cutoff, $r_c$ is equal to $2.5\sigma$.
+\item Initial system dimensions: $10\sigma \times 10\sigma \times 10\sigma$ 
+($L_{x} \times L_{y} \times L_{z}$).
+\item Initially the system is equilibrated to a reduced temperature $T^{*} = 1.0$, 
+using a Nos\'e-Hoover thermostat in LAMMPS.
+\item After the initial equilibration an engineering strain rate, $\dot{\gamma}$ is 
+applied to the system.
+\item Since application of a strain rate will change the simulation box dimensions, we use 
+\href{https://docs.lammps.org/fix_nvt_sllod.html}{nvt/sllod} thermostatting technique in LAMMPS
+to thermostat the system.
+\item The simulation outputs all the components of the pressure tensor of the system.
+\item The shear viscosity ($\eta$) is calculated from the off-diagonal($xy$) element of the pressure tensor
+as,
+$$ \eta = -\frac{P_{xy}}{\dot{\gamma}}.$$
+
+\end{itemize}
+
+\appendix
+
+\section{Appendix}
+LAMMPS require C language and MPI protocol to be pre-installed, hence make sure that 
+both of them are already installed in your system before running the simulation.
+Data analysis and plotting will be done using Python language, hence it is recommended that you 
+install python and some of its libraries (Numpy, Scipy and Matplotlib) to run the Python scripts.
+
+\subsection{Installing LAMMPS}
+
+\subsubsection{Linux Systems}
+\$ sudo add-apt-repository ppa:gladky-anton/lammps\\
+\$ sudo add-apt-repository ppa:openkim/latest\\
+\$ sudo apt-get update\\
+\$ sudo apt-get install lammps-daily\\
+
+\subsection{Installing VMD}
+
+Download the latest version of VMD for the corresponding OS from 
+\href{https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD}{here} 
+(You might need to create account with VMD inorder to download the package).
+After downloading the package unzip the package and open the terminal in the 
+go to the VMD package directory and enter the following commands,\\
+\$ ./configure \\
+\$ cd src \\ 
+\$ sudo make install \\
+\$ vmd \\
+
+\subsection{Installing Packmol}
+
+
 
 
 %\begin{figure}[h!]

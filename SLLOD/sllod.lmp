@@ -44,6 +44,13 @@ velocity 	all create 1.0 123456 dist gaussian
 minimize	1.0e-4 1.0e-4 100000 100000
 reset_timestep	0
 
+########## Thermostat-setup (Nos`e-Hoover thermostat) ##########
+fix             fxnvt all nvt temp 1.0 1.0 $(100.0*dt)
+
+run             10000
+unfix		fxnvt
+reset_timestep  0
+
 ########## Applying strain rate to the system ##########
 fix             fxnvt all nvt/sllod temp 1.0 1.0 $(100.0*dt)		# Used to thermostat a system with changing simulation box size
 fix             fxdeform all deform 1 xy erate ${srate} remap v		# Applies an engineering strain rate to the particles.

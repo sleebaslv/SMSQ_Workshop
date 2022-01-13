@@ -5,3 +5,8 @@
 \contentsline {section}{\numberline {3}Poiseuille System}{4}{section.3}
 \contentsline {section}{\numberline {4}Water System}{5}{section.4}
 \contentsline {section}{\numberline {5}SLLOD System}{5}{section.5}
+\contentsline {section}{\numberline {A}Appendix}{6}{appendix.A}
+\contentsline {subsection}{\numberline {A.1}Installing LAMMPS}{6}{subsection.A.1}
+\contentsline {subsubsection}{\numberline {A.1.1}Linux Systems}{6}{subsubsection.A.1.1}
+\contentsline {subsection}{\numberline {A.2}Installing VMD}{6}{subsection.A.2}
+\contentsline {subsection}{\numberline {A.3}Installing Packmol}{6}{subsection.A.3}
