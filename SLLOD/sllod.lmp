@@ -67,6 +67,6 @@ reset_timestep  0
 
 ########## Output Run ##########
 compute         computePress all pressure thermo_temp
-fix             fxpress all ave/time 1 1 50 c_computePress[*] file ./output/pressure-${srate}.dat
+fix             fxpress all ave/time 1 1 50 c_computePress[*] file ./output/pressure-${srate}.dat	# Pressure tensor values at every 50th timestep will be saved
 
 run             100000

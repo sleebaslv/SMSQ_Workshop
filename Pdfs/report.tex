@@ -90,10 +90,11 @@ output information is collected from LAMMPS for further analysis.)
 in the LAMMPS script.
 \item group $\Rightarrow$ To identify a set of particles as a single group.
 \item pair\_style, pair\_coeff $\Rightarrow$ To define the interaction parameters for the particles.
-\item set $\Rightarrow$
-\item fix $\Rightarrow$
-\item compute $\Rightarrow$
-\item dump, thermo\_style $\Rightarrow$
+\item compute $\Rightarrow$ To compute a quantity for a group of particles in the system.
+\item fix $\Rightarrow$ To apply an operation to the system during the timestepping or 
+minimization. 
+Can also be used to output the quantities calculated using the \textit{compute} command.
+\item dump, thermo\_style $\Rightarrow$ Output commands
 \end{itemize}
 
 \newpage
@@ -177,32 +178,66 @@ $$ \eta = -\frac{P_{xy}}{\dot{\gamma}}.$$
 \appendix
 
 \section{Appendix}
+Here we briefly discuss on how to install and run LAMMPS, Visual Molecular Dynamics (VMD) and Packmol.
 LAMMPS require C language and MPI protocol to be pre-installed, hence make sure that 
-both of them are already installed in your system before running the simulation.
+both of them are already installed in your operating system (OS) before running the simulation.
 Data analysis and plotting will be done using Python language, hence it is recommended that you 
-install python and some of its libraries (Numpy, Scipy and Matplotlib) to run the Python scripts.
+install Python and some of its libraries (Numpy, Scipy and Matplotlib) to run the Python scripts.
 
-\subsection{Installing LAMMPS}
+\subsection{LAMMPS}
 
-\subsubsection{Linux Systems}
+\subsubsection{Installing LAMMPS}
+
+\textbf{Linux OS}\\
 \$ sudo add-apt-repository ppa:gladky-anton/lammps\\
 \$ sudo add-apt-repository ppa:openkim/latest\\
 \$ sudo apt-get update\\
 \$ sudo apt-get install lammps-daily\\
+\newline
+\textbf{Mac OS}\\
+\newline
+\textbf{Windows OS}\\
 
-\subsection{Installing VMD}
+\subsubsection{Running LAMMPS}
+Enter the directory containing the LAMMPS input script and then type the 
+following command in the terminal,\\
+\$ mpirun -np \textit{N} lammps-daily < \textit{file\_name.lmp}\\
+\textit{N}$\Rightarrow$ Enter the number of processors to be used for parallel computing.\\
+
+\subsection{VMD}
+
+\subsubsection{Installing VMD}
 
 Download the latest version of VMD for the corresponding OS from 
 \href{https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD}{here} 
 (You might need to create account with VMD inorder to download the package).
 After downloading the package unzip the package and open the terminal in the 
-go to the VMD package directory and enter the following commands,\\
+VMD directory and enter the following commands,\\
 \$ ./configure \\
 \$ cd src \\ 
 \$ sudo make install \\
 \$ vmd \\
 
-\subsection{Installing Packmol}
+\newpage
+\subsubsection{Running VMD}
+To run a TCL script in VMD first enter the directory containing the VMD/TCL input script and 
+then type the following command in the terminal,\\
+\$ vmd -dispdev text -e \textit{file\_name.tcl}
+
+\subsection{Packmol}
+
+\subsubsection{Installing Packmol}
+
+Download Packmol from \href{http://leandro.iqm.unicamp.br/m3g/packmol/download.shtml}{here}. 
+Unzip the package and then and open the terminal in the directory called packmol
+and enter the following commands,\\
+\$ make \\
+\$ sudo cp packmol /usr/local/bin/
+
+\subsubsection{Running Packmol}
+Enter the directory containing the Packmol input script and then type the 
+following command in the terminal,\\
+\$ packmol < \textit{file\_name.inp}
 
 
 
