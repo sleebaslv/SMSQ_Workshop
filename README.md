@@ -1,2 +1,2 @@
-# SMSQ_Workshop
+# SMSQ Workshop
 Molecular dynamics simulation tutorials performed using LAMMPS
