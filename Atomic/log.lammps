@@ -1,0 +1,49 @@
+LAMMPS (7 Aug 2019)
+dimension 	3		# System coordinate dimension
+units		lj		# System units
+boundary 	p p p		# Set boundary style in each dimension
+
+atom_style	atomic		# Atom/particle attributes
+
+########## System setup ##########
+variable 	xlo equal 0.0
+variable 	xhi equal 10.0
+variable 	ylo equal 0.0
+variable 	yhi equal 10.0
+variable 	zlo equal 0.0
+variable 	zhi equal 10.0
+
+region          myregion block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} units box	# Define simulation box
+region          myregion block 0 ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} units box	
+region          myregion block 0 10 ${ylo} ${yhi} ${zlo} ${zhi} units box	
+region          myregion block 0 10 0 ${yhi} ${zlo} ${zhi} units box	
+region          myregion block 0 10 0 10 ${zlo} ${zhi} units box	
+region          myregion block 0 10 0 10 0 ${zhi} units box	
+region          myregion block 0 10 0 10 0 10 units box	
+
+create_box      1 myregion	# Create simulation box
+Created orthogonal box = (0 0 0) to (10 10 10)
+  2 by 2 by 2 MPI processor grid
+
+create_atoms	1 random 800 87183 myregion	# Create particles with a density of 0.8
+Created 800 atoms
+  create_atoms CPU = 0.000550801 secs
+
+mass		1 1.0				# Mass of each particle
+write_data	atomic.lmpsys			# Output the system model
+WARNING: Communication cutoff is 0.0. No ghost atoms will be generated. Atoms may get lost. (../comm_brick.cpp:166)
+
+########## Interaction Potentials ##########
+pair_style 	lj/cut 2.5	# Lennard-Jones potential with rc=2.5sigma
+pair_coeff 	1 1 1.0 1.0 	# epsilon=1.0 and sigma=1.0
+pair_modify	shift yes	# Shifted LJ potential
+
+##########  Neighbor List and Timestep  ##########
+timestep        0.005		# timestep
+neighbor        1.0 bin		# Create neighbor list
+neigh_modify    every 1 delay 0 check yes # Neighbor list update interval
+
+########## Log output ##########
+thermo_style 	custom step temp density ke pe etotal
+thermo 		100
+log 		log.dat

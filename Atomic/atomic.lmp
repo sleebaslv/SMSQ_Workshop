@@ -1,8 +1,8 @@
-dimension 	3
-units		lj
-boundary 	p p p
+dimension 	3		# System coordinate dimension
+units		lj		# System units
+boundary 	p p p		# Set boundary style in each dimension
 
-atom_style	atomic		# Used for to simulate particles that has only mass as its attribute
+atom_style	atomic		# Atom/particle attributes
 
 ########## System setup ##########
 variable 	xlo equal 0.0
@@ -12,24 +12,24 @@ variable 	yhi equal 10.0
 variable 	zlo equal 0.0
 variable 	zhi equal 10.0
 
-region          myregion block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} units box
+region          myregion block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} units box	# Define simulation box
 
-create_box      1 myregion
+create_box      1 myregion	# Create simulation box
 
-create_atoms	1 random 800 87183 myregion # Creates particles with a density of 0.8 
+create_atoms	1 random 800 87183 myregion	# Create particles with a density of 0.8 
 
-mass		1 1.0
-write_data	atomic.lmpsys
+mass		1 1.0				# Mass of each particle
+write_data	atomic.lmpsys			# Output the system model
 
 ########## Interaction Potentials ##########
-pair_style 	lj/cut 2.5
-pair_coeff 	1 1 1.0 1.0 
-pair_modify	shift yes
+pair_style 	lj/cut 2.5	# Lennard-Jones potential with rc=2.5sigma
+pair_coeff 	1 1 1.0 1.0 	# epsilon=1.0 and sigma=1.0 
+pair_modify	shift yes	# Shifted LJ potential 
 
 ##########  Neighbor List and Timestep  ##########
-timestep        0.005
-neighbor        1.0 bin
-neigh_modify    every 1 delay 0 check yes
+timestep        0.005		# timestep
+neighbor        1.0 bin		# Create neighbor list 
+neigh_modify    every 1 delay 0 check yes # Neighbor list update interval
 
 ########## Log output ##########
 thermo_style 	custom step temp density ke pe etotal 
@@ -39,7 +39,6 @@ log 		log.dat
 ########## System minimization ##########
 velocity 	all create 0.8 123456 dist gaussian
 
-minimize	1.0e-4 1.0e-4 100000 100000
 reset_timestep	0
 
 ########## Thermostat-setup (Nos`e-Hoover thermostat) ##########
