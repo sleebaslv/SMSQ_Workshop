@@ -5,20 +5,37 @@ units		lj
 atom_style	atomic
 
 ########## System setup  ##########
-region 		myregion block -5.0 5.0 -5.0 5.0 -12.0 12.0 units box		# Defining region for the entire simulation box
- 
-region		fluid block -5.0 5.0 -5.0 5.0 -10.0 10.0 units box		# Defining region for the fluid particles 
-region		wall1 block -5.0 5.0 -5.0 5.0 -12.0 -10.0 units box		# Defining region for the bottom wall particles
-region		wall2 block -5.0 5.0 -5.0 5.0 10.0 12.0 units box		# Defining region for the top wall particles
-
-create_box	3 myregion			# Creating the simulation box
-
-create_atoms	1 random 1000 87183 fluid	# Creating fluid particles with a density of 0.5
+variable 	xsim equal 10.0
+variable 	ysim equal 10.0
+variable	Lz equal 1.25
+variable 	zsim equal 5
+variable 	z_buffer equal 1.0
 
 lattice  	fcc 1.0			
+region 		myregion block 0 ${xsim} 0 ${ysim} 0 ${zsim} units lattice		# Defining region for the entire simulation box
+create_box	3 myregion			# Creating the simulation box
 
-create_atoms 	2 region wall1			# Creating bottom wall with a fcc lattice density of 1.0
-create_atoms 	3 region wall2			# Creating top wall with a fcc lattice density of 1.0
+create_atoms 	1 region myregion 			# Creating bottom wall with a fcc lattice density of 1.0
+
+#region		flow block  INF INF INF INF -${Lz} ${Lz} units lattice		# Defining region for the fluid particles 
+region		wall1 block INF INF INF INF INF 0.5 units lattice	# Defining region for the bottom wall particles
+group 		bot region wall1
+region		wall2 block INF INF INF INF 4.0 INF units lattice		# Defining region for the top wall particles
+group		top region wall2
+
+group 		walls union bot top
+group 		fluid subtract all walls
+
+#group 		fluid region flow
+
+set 		group fluid type 1
+set 		group bot type 2
+set 		group top type 3
+#create_atoms	1 random 1000 87183 fluid	# Creating fluid particles with a density of 0.5
+
+
+#create_atoms 	2 region wall1			# Creating bottom wall with a fcc lattice density of 1.0
+#create_atoms 	3 region wall2			# Creating top wall with a fcc lattice density of 1.0
 
 mass 		1 1.0
 mass 		2 1.0
@@ -29,10 +46,10 @@ write_data 	poiseuille.lmpsys
 ########## Defining groups ##########
 group 		system type 1 2 3  
 
-group           fluid type 1 
+#group           fluid type 1 
 
-group           bot type 2  
-group           top type 3 
+#group           bot type 2  
+#group           top type 3 
 group		wall type 2 3 
 
 ########## Interaction potentials ##########
@@ -54,7 +71,7 @@ neigh_modify    exclude group wall wall
 velocity        fluid create 1.0 123456
 
 fix             fxwall wall setforce 0.0 0.0 0.0	# To keep the walls rigid
-minimize        1.0e-6 1.0e-6 1000000 1000000
+#minimize        1.0e-6 1.0e-6 1000000 1000000
 reset_timestep  0
 
 ##########  Thermostating the fluid using Nos'e-Hoover thermostat ##########
@@ -69,7 +86,7 @@ thermo_style    custom step temp c_wall_temp c_fluid_temp ke pe etotal
 dump            dmpall  all dcd 50 dump.dcd
 dump_modify     dmpall unwrap yes
 
-compute         cChunk fluid chunk/atom bin/1d z 0.0 0.1 units box bound z -15.9752 15.9752       
+compute         cChunk fluid chunk/atom bin/1d z 0.0 0.1 units box bound z 0 16.0       
 fix             fx_vel1 fluid ave/chunk 1 10000 10000 cChunk vx vy vz file ./vel_before.dat
 
 run             10000
