@@ -36,9 +36,10 @@ thermo_style 	custom step temp density ke pe etotal
 thermo 		100
 log 		log.dat
 
-########## System minimization ##########
-velocity 	all create 0.8 123456 dist gaussian
+########## Starting the simulation ##########
+velocity 	all create 0.8 123456 dist gaussian	# Assign velocities to the particles
 
+minimize        1.0e-4 1.0e-4 100000 100000	# Energy minimization
 reset_timestep	0
 
 ########## Thermostat-setup (Nos`e-Hoover thermostat) ##########
@@ -46,9 +47,10 @@ fix		fxnvt all nvt temp 0.8 0.8 $(100.0*dt)
 
 run 		10000
 reset_timestep 	0
-########## Output Run and computing RDF ##########
 
-compute 	computeRdf all rdf 200  
+########## Output Run and computing RDF ##########
+compute 	computeRdf all rdf 200 
+
 fix 		fixRdf all ave/time 1 10000 10000 c_computeRdf[*] file rdf.dat mode vector # RDF values averaged over 10000 timesteps will be saved
 
 dump 		dumpall all dcd 100 atomic.dcd
