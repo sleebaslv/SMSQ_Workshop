@@ -1,3 +1,4 @@
+echo 		screen
 dimension 	3
 boundary	p p f
 units		lj
@@ -5,17 +6,39 @@ units		lj
 atom_style	atomic
 
 ########## System setup  ##########
-region 		myregion block -5.0 5.0 -5.0 5.0 -12.0 12.0 units box		# Defining region for the entire simulation box
+variable        rlatt equal (4/${sdens})^(1/3)
+variable        rlatt_half equal ${rlatt}/2.0
+
+variable        Lx equal 16
+variable        Ly equal 16
+variable        Lz equal 20
+variable        xlo equal -${Lx}/2
+variable        xhi equal  ${Lx}/2
+variable        ylo equal -${Ly}/2
+variable        yhi equal  ${Ly}/2
+variable        zlo equal -${Lz}/2
+variable        zhi equal  ${Lz}/2
+variable	wall_width equal 2.0
+
+variable        sim_xlo equal ${xlo}+${rlatt_half} 
+variable        sim_xhi equal ${xhi}+${rlatt_half} 
+variable        sim_ylo equal ${ylo}+${rlatt_half} 
+variable        sim_yhi equal ${yhi}+${rlatt_half} 
+variable        sim_zlo equal ${zlo}-${wall_width}
+variable        sim_zhi equal ${zhi}+${wall_width}
+
+
+region 		myregion block ${sim_xlo} ${sim_xhi} ${sim_ylo} ${sim_yhi} ${sim_zlo} ${sim_zhi} units box		# Defining region for the entire simulation box
  
-region		fluid block -5.0 5.0 -5.0 5.0 -10.0 10.0 units box		# Defining region for the fluid particles 
-region		wall1 block -5.0 5.0 -5.0 5.0 -12.0 -10.0 units box		# Defining region for the bottom wall particles
-region		wall2 block -5.0 5.0 -5.0 5.0 10.0 12.0 units box		# Defining region for the top wall particles
+region		fluid block ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} units box		# Defining region for the fluid particles 
+region		wall1 block ${xlo} ${xhi} ${ylo} ${yhi} ${sim_zlo} ${zlo} units box		# Defining region for the bottom wall particles
+region		wall2 block ${xlo} ${xhi} ${ylo} ${yhi} ${zhi} ${sim_zhi} units box		# Defining region for the top wall particles
 
 create_box	3 myregion			# Creating the simulation box
 
-create_atoms	1 random 1000 87183 fluid	# Creating fluid particles with a density of 0.5
+create_atoms	1 random 2560 87183 fluid	# Creating fluid particles with a density of 0.5
 
-lattice  	fcc 1.0			
+lattice  	fcc ${sdens}			
 
 create_atoms 	2 region wall1			# Creating bottom wall with a fcc lattice density of 1.0
 create_atoms 	3 region wall2			# Creating top wall with a fcc lattice density of 1.0
@@ -69,7 +92,7 @@ thermo_style    custom step temp c_wall_temp c_fluid_temp ke pe etotal
 dump            dmpall  all dcd 50 dump.dcd
 dump_modify     dmpall unwrap yes
 
-compute         cChunk fluid chunk/atom bin/1d z 0.0 0.1 units box bound z -15.9752 15.9752       
+compute         cChunk fluid chunk/atom bin/1d z 0.0 0.1 units box bound z -12.0 12.0       
 fix             fx_vel1 fluid ave/chunk 1 10000 10000 cChunk vx vy vz file ./vel_before.dat
 
 run             10000
@@ -77,6 +100,9 @@ unfix 		fx_vel1
 
 ########## Application of external field ##########
 fix             fxacc fluid gravity 0.075 vector 1 0 0		# Applying an external acceleration of 0.075 to all fluid particles in the x-direction
+
+compute         fluidTemp fluid temp/partial 0 1 1
+fix_modify 	fxnvt_fluid temp fluidTemp
 
 run		10000
 reset_timestep  0
