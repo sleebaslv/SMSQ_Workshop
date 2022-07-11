@@ -55,8 +55,8 @@ reset_timestep  0
 fix             fxnvt all nvt/sllod temp 1.0 1.0 $(100.0*dt)		# Used to thermostat a system with changing simulation box size
 fix             fxdeform all deform 1 xy erate ${srate} remap v		# Applies an engineering strain rate to the particles.
 									
-compute         usual all temp
-compute         tilt all temp/deform
+compute         usual all temp		# Compute the temperature 
+compute         tilt all temp/deform	# Compute the temperature after removing the bias due to shear
 
 thermo          1000
 thermo_style    custom step temp density c_usual epair etotal press pxy v_srate
