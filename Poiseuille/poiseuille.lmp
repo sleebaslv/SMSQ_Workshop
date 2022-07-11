@@ -17,7 +17,7 @@ variable        ylo equal -${Ly}/2
 variable        yhi equal  ${Ly}/2
 variable        zlo equal -${Lz}/2
 variable        zhi equal  ${Lz}/2
-variable	wall_width equal 2.0
+variable	wall_width equal 2.0	
 
 variable        sim_xlo equal ${xlo}+${rlatt}/2.0 
 variable        sim_xhi equal ${xhi}+${rlatt}/2.0 
@@ -80,7 +80,7 @@ minimize        1.0e-6 1.0e-6 1000000 1000000		# Energy minimization
 reset_timestep  0
 
 ##########  Thermostating the fluid using Nos'e-Hoover thermostat ##########
-fix             fxnvt_fluid fluid nvt temp 1.0 1.0 $(100.0*dt)
+fix             fxnvt_fluid fluid nvt temp 1.0 1.0 $(100.0*dt)		# Thermostatting fluid particles
 
 compute         wall_temp wall temp
 compute         fluid_temp fluid temp
