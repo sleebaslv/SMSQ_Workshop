@@ -28,10 +28,7 @@ plt.errorbar(srate, viscosity_mean, yerr=viscosity_error, linestyle='none', colo
 plt.xscale('log')
 plt.ylabel('Shear viscosity $(\eta)$')
 plt.xlabel('Strain rate $(\dot \gamma$)')
-plt.title('Shear viscosity (SLLOD) $vs$ Strain rate')
-text = '$\eta_{GK}$ = 1.943' 
-#text_ref = 'Rowley, R. L., and M. M. Painter. Diffusion and viscosity equations of state for a Lennard-Jones fluid obtained from molecular dynamics simulations. International journal of thermophysics 18.5 (1997): 1109-1121.'
-text_ref = '(DOI:10.1007/BF02575252)'
+text = '$\\rho^*$ = 0.8, $T^{*} = 1.0$' 
 plt.text(0.6, 2.4, text)
-plt.text(0.3, 2.35, text_ref, fontsize=10, color='b')
+plt.title('Shear viscosity (SLLOD) of LJ fluid $vs$ Strain rate')
 plt.show()

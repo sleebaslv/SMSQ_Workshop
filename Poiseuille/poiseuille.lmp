@@ -1,13 +1,12 @@
 echo 		screen
-dimension 	3	 
-boundary	p p f
-units		lj
-
-atom_style	atomic
+dimension 	3		 # System coordinate dimension
+boundary	p p f   	 # System units
+units		lj      	 # Set boundary style in each dimension
+                        	                                        
+atom_style	atomic  	 # Atom/particle attributes
 
 ########## System setup  ##########
-variable        rlatt equal (4/${sdens})^(1/3)
-variable        rlatt_half equal ${rlatt}/2.0
+variable        rlatt equal (4/${sdens})^(1/3)	# rho = Unit cell atoms/a^3
 
 variable        Lx equal 16
 variable        Ly equal 16
@@ -20,10 +19,10 @@ variable        zlo equal -${Lz}/2
 variable        zhi equal  ${Lz}/2
 variable	wall_width equal 2.0
 
-variable        sim_xlo equal ${xlo}+${rlatt_half} 
-variable        sim_xhi equal ${xhi}+${rlatt_half} 
-variable        sim_ylo equal ${ylo}+${rlatt_half} 
-variable        sim_yhi equal ${yhi}+${rlatt_half} 
+variable        sim_xlo equal ${xlo}+${rlatt}/2.0 
+variable        sim_xhi equal ${xhi}+${rlatt}/2.0 
+variable        sim_ylo equal ${ylo}+${rlatt}/2.0 
+variable        sim_yhi equal ${yhi}+${rlatt}/2.0 
 variable        sim_zlo equal ${zlo}-${wall_width}
 variable        sim_zhi equal ${zhi}+${wall_width}
 
@@ -38,7 +37,7 @@ create_box	3 myregion			# Create simulation box
 
 create_atoms	1 random 2560 87183 fluid	# Create fluid particles with density 0.5
 
-lattice  	fcc ${sdens}			
+lattice  	fcc ${sdens}			# Define a fcc lattice			
 
 create_atoms 	2 region wall1			# Create bottom wall with fcc lattice density of 1.0
 create_atoms 	3 region wall2			# Create top wall with fcc lattice density of 1.0
@@ -59,25 +58,25 @@ group           top type 3
 group		wall type 2 3 
 
 ########## Interaction potentials ##########
-pair_style 	lj/cut 2.5
+pair_style 	lj/cut 2.5	# Lennard-Jones potential with rc=2.5sigma
 
-pair_coeff      1 1 1.0 1.0
-pair_coeff      1 2* 1.0 1.0
-pair_coeff      2* 2* 0.0 0.0
+pair_coeff      1 1 1.0 1.0	# fluid-fluid pair coefficients
+pair_coeff      1 2* 1.0 1.0	# fluid-walls pair coefficients
+pair_coeff      2* 2* 0.0 0.0	# wall-wall pair coefficients
 
 ## OR ##
 #pair_coeff 	* * 1.0 1.0 
 
 ##########  Timestep & minimization  ##########
-timestep        0.001
-neighbor        1.0 bin
-neigh_modify    every 1 delay 0 check yes
-neigh_modify    exclude group wall wall			 
+timestep        0.001   	# timestep
+neighbor        1.0 bin 	# Create neighbor list 
+neigh_modify    every 1 delay 0 check yes	# Neighbor list update interval
+neigh_modify    exclude group wall wall		# Exclude from the neighbor list		 
 
-velocity        fluid create 1.0 123456
+velocity        fluid create 1.0 123456		# Assign velocities to fluid particles
 
 fix             fxwall wall setforce 0.0 0.0 0.0	# To keep the walls rigid
-minimize        1.0e-6 1.0e-6 1000000 1000000
+minimize        1.0e-6 1.0e-6 1000000 1000000		# Energy minimization
 reset_timestep  0
 
 ##########  Thermostating the fluid using Nos'e-Hoover thermostat ##########

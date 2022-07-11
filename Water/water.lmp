@@ -2,7 +2,7 @@ dimension 	3
 boundary 	p p p
 units		real
 
-atom_style	full # Style "full" is used to simulate molecular systems with charges.
+atom_style	full # For particles having bonds, angles, dihedrals, impropers and  charge as attributes
 
 ########## Reading the system file ########## 
 read_data	./water.lmpsys
@@ -13,15 +13,15 @@ group 		hyd type 1
 group 		oxy type 2
 
 ########## Interaction Potentials ##########
-pair_style	lj/cut/coul/long 10.0 10.0
-kspace_style 	pppm 0.0001
-bond_style   	harmonic
+pair_style	lj/cut/coul/long 10.0 10.0	# LJ and short-range Coulombic interactions
+kspace_style 	pppm 0.0001			# Calculation of long-range Coulombic interations using P3M Ewald
+bond_style   	harmonic		
 angle_style  	harmonic
 
-bond_coeff   	1 1000.0 1.0 
-angle_coeff  	1 1000.0 109.47
-pair_coeff   	* * 0.0 0.0	        # HT
-pair_coeff   	2 2 0.15535 3.166  	# OT
+bond_coeff   	1 1000.0 1.0 		# 1/2*kb*rb^2
+angle_coeff  	1 1000.0 109.47		# 1/2*ka*theta^2
+pair_coeff   	* * 0.0 0.0	        # H-H pair coefficient
+pair_coeff   	2 2 0.15535 3.166  	# O-O pair coefficient
 
 ########## Timestep and Neighbor list ##########
 timestep        1.0
@@ -43,7 +43,7 @@ minimize 	1.0e-4 1.0e-4 1000000 1000000
 fix 		fxshk all shake 0.0001 20 0 b 1 a 1
 
 ########## Equilibration in a NPT ensemble (Nos`e-Hoover barostat) ##########
-fix             fxnpt all npt temp 298.0 298.0 100.0 iso 1.0 1.0 100.0 
+fix             fxnpt all npt temp 298.0 298.0 100.0 iso 1.0 1.0 100.0 # NPT ensemble with an isotropic pressure of 1 bar 
 run 		50000
 
 reset_timestep  0

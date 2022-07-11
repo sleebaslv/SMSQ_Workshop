@@ -2,8 +2,8 @@ dimension 	3
 units		lj
 boundary 	p p p
 
-atom_style	atomic		# Used for to simulate particles that has only mass as its attribute
-
+atom_style	atomic	
+	
 ########## System setup ##########
 variable 	xlo equal 0.0
 variable 	xhi equal 10.0
@@ -14,7 +14,7 @@ variable 	zhi equal 10.0
 
 variable        srate equal ${strain_rate}	# Strain rate applied 
 
-region          myregion prism ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} 0.0 0.0 0.0 
+region          myregion prism ${xlo} ${xhi} ${ylo} ${yhi} ${zlo} ${zhi} 0.0 0.0 0.0 	# Define the simulation box region  
 
 create_box      1 myregion
 
